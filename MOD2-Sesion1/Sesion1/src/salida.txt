@@ -1,0 +1,576 @@
+El numero de bloques es: 181.
+             Llamadas al Sistema                      OPEN(2)
+
+
+Bloque 1: 
+
+NOMBRE
+       open, creat - abren y posiblemente crean un fichero o dispositivo
+
+Bloque 2: 
+
+
+SINOPSIS
+       #include <sys/types.h>
+       #include <sys/stat.h>
+       #inc
+Bloque 3: 
+
+lude <fcntl.h>
+
+       int open(const char *camino, int flags);
+       int open(
+Bloque 4: 
+
+const char *camino, int flags, mode_t modo);
+       int creat(const char *camino
+Bloque 5: 
+
+, mode_t modo);
+
+DESCRIPCIÓN
+       La  llamada  al sistema open() se utiliza p
+Bloque 6: 
+
+ara convertir una ruta en un
+       descriptor de fichero (un pequeño entero no
+Bloque 7: 
+
+ negativo que se utiliza  en
+       las  operaciones de E/S posteriores como en 
+Bloque 8: 
+
+read, write, etc.).  Cuando
+       la llamada tiene éxito, el  descriptor  de  
+Bloque 9: 
+
+fichero  devuelto  será  el
+       descriptor  de  fichero  más  pequeño  no 
+Bloque 10: 
+ abierto  actualmente para el
+       proceso.  Esta llamada crea un nuevo ficher
+Bloque 11: 
+o abierto, no compartido con
+       ningún   otro   proceso.   (Pero   pueden  
+Bloque 12: 
+aparecer  ficheros  abiertos
+       compartidos a través de la  llamada  al  si
+Bloque 13: 
+stema  fork(2).)   El  nuevo
+       descriptor de fichero se configura para que 
+Bloque 14: 
+permanezca abierto a través
+       de funciones exec (vea fcntl(2)).  El  apunt
+Bloque 15: 
+ador  de  lectura/escritura
+       del fichero se configura para que apunte al p
+Bloque 16: 
+rincipio del fichero.
+
+       El  parámetro  flags  es  uno  de  O_RDONLY,  O_W
+Bloque 17: 
+RONLY  u  O_RDWR  que,
+       respectivamente, piden que la apertura del fichero
+Bloque 18: 
+ sea  solamente  para
+       lectura,   solamente  para  escritura,  o  para  le
+Bloque 19: 
+ctura  y  escritura,
+       combinándose mediante el operador de bits OR (|),  
+Bloque 20: 
+con cero  o  más  de
+       las siguientes macros:
+
+       O_CREAT
+            
+Bloque 21: 
+  Si   el   fichero   no  existe,  será  creado.   El  propietario
+            
+Bloque 22: 
+  (identificador de usuario) del fichero se fija al  identificador
+             
+Bloque 23: 
+ de  usuario  efectivo  del  proceso.   La  propiedad  del  grupo
+              
+Bloque 24: 
+(identificador de grupo) se fija bien al identificador de  grupo
+              e
+Bloque 25: 
+fectivo  del  proceso  o  bien  al  identificador  de grupo del
+              di
+Bloque 26: 
+rectorio padre (dependiendo del tipo de sistema de ficheros  y
+              las
+Bloque 27: 
+  opciones  de  montaje, y el modo del directorio padre, vea,
+              p.e.
+Bloque 28: 
+ las opciones de montaje bsdgroups  y  sysvgroups  sobre  el
+              siste
+Bloque 29: 
+ma de ficheros ext2, tal como se describen en mount(8)).
+
+       O_EXCL Cuando  
+Bloque 30: 
+se  combina  con  O_CREAT, es un error que el fichero ya
+              exista, y
+Bloque 31: 
+ open fallará. En este contexto,  un  enlace  simbólico
+              existe, 
+Bloque 32: 
+ sin tener en cuenta a donde apunte.  O_EXCL no funciona
+              en sistem
+Bloque 33: 
+as de ficheros de red NFS, programas que confíen en  él
+              para  ef
+Bloque 34: 
+ectuar  tareas  de  bloqueo  contendrán una condición de
+              concurs
+Bloque 35: 
+o. La  solución  para  efectuar  un  bloqueo  atómico  de
+              ficher
+Bloque 36: 
+o mediante un fichero de bloqueo es crear un fichero único
+              en el 
+Bloque 37: 
+mismo sistema de ficheros (por  ejemplo,  incorporando  el
+              nombre 
+Bloque 38: 
+ del ordenador y el PID) y utilizar link(2) para hacer un
+              enlace a
+Bloque 39: 
+l fichero de bloqueo. Si link() devuelve 0,  el  bloqueo
+              tiene  é
+Bloque 40: 
+xito. En caso contrario, use stat(2) en el fichero único
+              para com
+Bloque 41: 
+probar si su número de enlaces se ha incrementado  a  2,
+              en cuyo 
+Bloque 42: 
+caso el bloqueo también tiene éxito.
+
+       O_NOCTTY
+              Si  camino
+Bloque 43: 
+  se  refiere  a  una  terminal  —  vea tty(4) — no se
+              convert
+Bloque 44: 
+irá en la terminal controladora del proceso ni en el caso
+              de que 
+Bloque 45: 
+el proceso no tenga ninguna.
+
+       O_TRUNC
+              Si  el  fichero  ya  
+Bloque 46: 
+existe y es un fichero regular y el modo de
+              apertura permite escri
+Bloque 47: 
+bir (p.e.,  es  O_RDWR  o  O_WRONLY)  será
+              truncado  a  longitud 
+Bloque 48: 
+0.  Si el fichero es una FIFO o un fichero
+              de dispositivo de termi
+Bloque 49: 
+nal, la opción O_TRUNC  es  ignorada.  En
+              otro  caso  el  efecto 
+Bloque 50: 
+ de  O_TRUNC  es  indefinido.  (En muchas
+              versiones de Linux será
+Bloque 51: 
+ ignorado; en otras devolverá un error.)
+
+       O_APPEND
+              El fich
+Bloque 52: 
+ero se abrirá en  modo  de  sólo-añadir.  Antes  de  cada
+              escri
+Bloque 53: 
+tura,  el apuntador del fichero es posicionado al final del
+              ficher
+Bloque 54: 
+o, como se haría con lseek.   O_APPEND  puede  conducir  a
+              ficher
+Bloque 55: 
+os  corruptos  en  sistemas  de  ficheros NFS si más de un
+              proces
+Bloque 56: 
+o añade datos a un fichero a la vez. Esto  es  así  porque
+              NFS n
+Bloque 57: 
+o admite añadir a un fichero, así que el núcleo del cliente
+              ha 
+Bloque 58: 
+de simularlo, lo que no puede hacerse sin  una  condición  de
+              car
+Bloque 59: 
+rera.
+
+       O_NONBLOCK u O_NDELAY
+              Cuando   ésto  es  posible,  
+Bloque 60: 
+el  fichero  se  abre  en  modo  no
+              bloqueante. Ni el open ni ning
+Bloque 61: 
+una operación subsecuente sobre el
+              descriptor de fichero   que es
+Bloque 62: 
+ devuelto harán que el proceso que
+              hace la llamada espere.   Para
+Bloque 63: 
+  el  manejo  de  FIFOs  (tuberías
+              nombradas), vea también fifo(
+Bloque 64: 
+4).
+
+       O_SYNC El  fichero  se abre para E/S síncrona. Cualesquiera operaci
+Bloque 65: 
+ones
+              de escritura write sobre el  descriptor  de  fichero  resulta
+Bloque 66: 
+nte
+              bloquearán  el proceso que ha efectuado la llamada hasta que 
+Bloque 67: 
+los
+              datos  hayan  sido  físicamente  escritos  en   el   disposit
+Bloque 68: 
+ivo
+              subyacente.  Vea no obstante más abajo la sección RESTRICCIO
+Bloque 69: 
+NES.
+
+       O_NOFOLLOW
+              Si  pathname es un enlace simbólico, ento
+Bloque 70: 
+nces la apertura falla.
+              Ésta es una extensión de FreeBSD que fue
+Bloque 71: 
+ añadida a Linux  en  la
+              versión  2.1.126.  Todavía se seguirá
+Bloque 72: 
+n los enlaces simbólicos de
+              los componentes anteriores de la ruta
+Bloque 73: 
+. Los ficheros cabecera  de
+              la   versión   2.0.100  y  posteriore
+Bloque 74: 
+s  de  glibc  incluyen  una
+              definición de esta opción; los núcl
+Bloque 75: 
+eos anteriores al 2.1.126  lo
+              ignorarán si se usa.
+
+       O_DIRE
+Bloque 76: 
+CTORY
+              Si  pathname  no  es  un directorio, hará que la apertura f
+Bloque 77: 
+alle.
+              Esta opción es específica de Linux y fue añadida en  la  
+Bloque 78: 
+versión
+              2.1.126  del  núcleo  para  evitar  problemas  de  deneg
+Bloque 79: 
+ación de
+              servicio al llamar a opendir(3) sobre una FIFO o disposi
+Bloque 80: 
+tivo  de
+              cinta,  pero  no  se  debería usar fuera de la implement
+Bloque 81: 
+ación de
+              opendir.
+
+       O_DIRECT
+              Trata de minimiz
+Bloque 82: 
+ar los efectos de la caché de E/S a y  desde  el
+              fichero.  En gen
+Bloque 83: 
+eral ésto empeorará el rendimiento, pero es útil
+              en situaciones
+Bloque 84: 
+ especiales, como cuando las  aplicaciones  poseen
+              su  propia  cac
+Bloque 85: 
+hé.   La  E/S del fichero se realiza directamente
+              a/desde buffers
+Bloque 86: 
+ en el espacio de usuario.  La E/S  es  síncrona,
+              es  decir,  cua
+Bloque 87: 
+ndo  las  llamadas  al sistema read(2) o write(2)
+              finalizan, se ga
+Bloque 88: 
+rantiza que los  datos  han  sido  transferidos.
+              Los tamaños de l
+Bloque 89: 
+a transferencia, y el alineamiento del buffer de
+              usuario  y  el  d
+Bloque 90: 
+esplazamiento  del  fichero  deben  ser   todos
+              múltiplos del tam
+Bloque 91: 
+año de bloque lógico del sistema de ficheros.
+              Esta  bandera  est
+Bloque 92: 
+á  soportada  en varios sistemas tipo Unix; el
+              soporte para Linux
+Bloque 93: 
+ fue añadido en la versión 2.4.10 del núcleo.
+              Una interfaz sem�
+Bloque 94: 
+�nticamente similar  para  los  dispositivos  de
+              bloque se describ
+Bloque 95: 
+e en raw(8).
+
+       O_ASYNC
+              Genera  una  señal  (SIGIO  por  def
+Bloque 96: 
+ecto,  pero se puede cambiar
+              mediante fcntl(2)) cuando la entrada 
+Bloque 97: 
+o la salida se hace posible
+              en  este  descriptor  de fichero.  Est
+Bloque 98: 
+a característica está sólo
+              disponible para terminales, pseudo-t
+Bloque 99: 
+erminales, y conectores. Vea
+              fcntl(2) para más detalles..
+
+      
+Bloque 100:  O_LARGEFILE
+              En  sistemas  de  32  bits  que soportan el `sistema 
+Bloque 101: de ficheros
+              grandes' (Large Files System, LFS) permite abrir fiche
+Bloque 102: ros  cuyos
+              tamaños no pueden ser representados en 31 bits.
+
+     
+Bloque 103:   Algunos  de estos modificadores opcionales pueden alterarse mediante el
+      
+Bloque 104:  empleo de fcntl después de que el fichero haya sido abierto.
+
+       El argume
+Bloque 105: nto modo especifica los permisos a emplear en caso de  que  se
+       cree  un  
+Bloque 106: nuevo fichero. Es modificado por la máscara umask del proceso
+       de la form
+Bloque 107: a habitual: los permisos  del  fichero  creado  son  (modo  &
+       ~umask).   
+Bloque 108: Observe  que  este modo sólo se aplica a futuros accesos del
+       fichero rec
+Bloque 109: ién creado; la llamada open que crea  un  fichero  de  solo-
+       lectura   p
+Bloque 110: uede   devolver   también   un   descriptor  de  fichero  de
+       lectura/esc
+Bloque 111: ritura.
+
+       Se proporcionan las siguientes constantes simbólicas para modo:
+Bloque 112: 
+
+       S_IRWXU
+              00700 el usuario (el propietario del fichero) tie
+Bloque 113: ne permisos  de
+              lectura, escritura y ejecución
+
+       S_IRUSR (S
+Bloque 114: _IREAD)
+              00400 el usuario tiene permiso de lectura
+
+       S_IWUSR 
+Bloque 115: (S_IWRITE)
+              00200 el usuario tiene permiso de escritura
+
+       S_I
+Bloque 116: XUSR (S_IEXEC)
+              00100 el usuario tiene permiso de ejecución
+
+     
+Bloque 117:   S_IRWXG
+              00070 el grupo tiene permiso de lectura, escritura y eje
+Bloque 118: cución
+
+       S_IRGRP
+              00040 el grupo tiene permiso de lectura
+
+ 
+Bloque 119:       S_IWGRP
+              00020 el grupo tiene permiso de escritura
+
+       S_
+Bloque 120: IXGRP
+              00010 el grupo tiene permiso de ejecución
+
+       S_IRWXO
+ 
+Bloque 121:              00007 los otros tienen permiso de lectura, escritura y ejecución
+
+
+Bloque 122:        S_IROTH
+              00004 los otros tienen permiso de lectura
+
+       S
+Bloque 123: _IWOTH
+              00002 los otros tienen permiso de escritura
+
+       S_IXOTH
+Bloque 124: 
+              00001 los otros tienen permiso de ejecución
+
+       El argumento
+Bloque 125:  modo debe especificarse cuando O_CREAT está en flags, y si
+       no está, no
+Bloque 126:  es tenido en cuenta.
+
+       creat equivale a open con flags igual a O_CREAT|O_
+Bloque 127: WRONLY|O_TRUNC.
+
+VALOR DEVUELTO
+       open y creat devuelven el nuevo descripto
+Bloque 128: r  de  fichero,  o  -1  si  ha
+       ocurrido  un  error  (en  cuyo caso, se da
+Bloque 129:  un valor apropiado a errno).
+       Observe que open pueden abrir ficheros espe
+Bloque 130: ciales de dispositivo,  pero
+       creat no puede crearlos; emplee mknod(2) en 
+Bloque 131: su lugar.
+
+       En  sistemas  de  ficheros  NFS con asociación de UIDs habili
+Bloque 132: tada, open
+       puede devolver un descriptor de fichero pero p. ej. llamadas a
+Bloque 133:   read(2)
+       pueden  denegarse  con  el error EACCES.  Esto es así porque e
+Bloque 134: l cliente
+       hace el open comprobando los permisos, pero la  asociación  de
+Bloque 135:   UID  la
+       hace el servidor sobre las peticiones de lectura y escritura.
+
+
+Bloque 136:        Si  el  fichero  es  recién  creado,  sus campos atime, ctime, mtime se
+
+Bloque 137:        rellenan con la hora actual, al igual que los campos ctime y mtime  del
+ 
+Bloque 138:       directorio padre.  En otro caso, si el fichero es modificado a causa de
+  
+Bloque 139:      la bandera O_TRUNC, sus campos ctime y mtime se rellenan  con  la  hora
+   
+Bloque 140:     actual.
+
+ERRORES
+       EEXIST camino ya existe y se usaron O_CREAT y O_EXCL
+Bloque 141: .
+
+       EISDIR camino  se  refiere a un directorio y el acceso pedido implicab
+Bloque 142: a
+              escribir (esto es, O_WRONLY o O_RDWR estaban activos).
+
+       E
+Bloque 143: ACCES El acceso pedido al fichero  no  es  permitido,  o  uno  de  los
+         
+Bloque 144:      directorios  en  camino  no  tiene  permiso  de  búsqueda o paso
+         
+Bloque 145:      (ejecución), o el fichero todavía  no  existe  y  el  directorio
+        
+Bloque 146:       padre no tiene permiso de escritura.
+
+       ENAMETOOLONG
+              ca
+Bloque 147: mino era demasiado largo.
+
+       ENOENT O_CREAT  no  está activo y el fichero 
+Bloque 148: especificado no existe.  O
+              bien,  un componente directorio en cami
+Bloque 149: no  no  existe  o  es  un
+              enlace simbólico colgante (que apunta a
+Bloque 150:  un fichero inexistente).
+
+       ENOTDIR
+              Un  componente  de  cami
+Bloque 151: no empleado como un directorio no es, de
+              hecho, un directorio o se
+Bloque 152:  ha especificado la opción  O_DIRECTORY
+              y pathname no es un direc
+Bloque 153: torio.
+
+       ENXIO  Se ha seleccionado O_NONBLOCK | O_WRONLY, el fichero indic
+Bloque 154: ado es
+              una FIFO y ningún proceso tiene el fichero abierto para le
+Bloque 155: ctura.
+              O  el  fichero es un fichero especial de dispositivo y no e
+Bloque 156: xiste
+              el dispositivo correspondiente.
+
+       ENODEV pathname se r
+Bloque 157: efiere a un fichero especial de  dispositivo  y  no
+              existe  el  di
+Bloque 158: spositivo  correspondiente.  (Éste es un fallo del
+              núcleo de Lin
+Bloque 159: ux. En esta situación se debería devolver ENXIO.)
+
+       EROFS  camino se ref
+Bloque 160: iere a un fichero de un sistema de ficheros de sólo
+              lectura y se 
+Bloque 161: ha pedido un acceso de escritura.
+
+       ETXTBSY
+              camino se refier
+Bloque 162: e a una imagen ejecutable que se está ejecutando
+              ahora mismo y se
+Bloque 163:  pidió un acceso de escritura.
+
+       EFAULT camino apunta afuera de su espaci
+Bloque 164: o de direcciones accesible.
+
+       ELOOP  Se han encontrado  demasiados  enlác
+Bloque 165: es  simbólicos  al  resolver
+              camino,  o se ha especificado la opc
+Bloque 166: ión O_NOFOLLOW pero pathname
+              no es un enlace simbólico.
+
+       
+Bloque 167: ENOSPC camino iba a ser creado pero el dispositivo  que  lo  habría  de
+       
+Bloque 168:        contener no tiene espacio para el nuevo fichero.
+
+       ENOMEM No hay di
+Bloque 169: sponible bastante memoria del núcleo.
+
+       EMFILE El proceso ya tiene abiert
+Bloque 170: os todos los ficheros que puede.
+
+       ENFILE Se  ha alcanzado el límite del 
+Bloque 171: número total de ficheros abiertos
+              en el sistema.
+
+CONFORME A
+    
+Bloque 172:    SVr4,  SVID,  POSIX,  X/OPEN,  BSD  4.3  Las  banderas   O_NOFOLLOW   y
+     
+Bloque 173:   O_DIRECTORY son específicas de Linux.  Para obtener sus definiciones es
+     
+Bloque 174:   necesario definir la macro _GNU_SOURCE.
+
+RESTRICCIONES
+       Hay muchas impro
+Bloque 175: piedades en el protocolo subyacente  a  NFS,  afectando
+       entre  otros  a  
+Bloque 176: O_SYNC y a O_NDELAY.  POSIX proporciona tres variantes
+       diferentes de E/S 
+Bloque 177: síncrona, correspondientes  a  las  opciones  O_SYNC,
+       O_DSYNC  y O_RSYNC
+Bloque 178: .  Actualmente (2.1.130) todas ellas son sinónimas en
+       Linux.
+
+VÉASE TAM
+Bloque 179: BIÉN
+       read(2), write(2), fcntl(2),  close(2),  link(2),  mknod(2),  mount
+Bloque 180: (2),
+       stat(2), umask(2), unlink(2), socket(2), fopen(3), fifo(4)
+
+Linux   
+Bloque 181:                          3 junio 1999                          OPEN(2)
+
+Linux   
