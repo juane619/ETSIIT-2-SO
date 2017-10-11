@@ -1,0 +1,8 @@
+Práctica 7 Modulo 2 Sistemas Operativos UGR.
+
+Modelado de cliente-servidor mediante proxy para imprimir por pantalla (en exclusion mutua).
+
+Cliente le pide a servidor que quiere imprimir y este delega esa funcion en proxy.
+Este va permitiendo el acceso en EM a cada cliente para que cada uno imprima por pantalla su mensaje.
+
+Ejecutar primero el servidor.
